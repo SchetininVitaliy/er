@@ -1,4 +1,4 @@
-void exp1811_sim_digi (Int_t nEvents = 1000) {
+void exp1811_sim_digi (Int_t nEvents = 10000) {
 //----------------------------------
   Double_t BeamDetLToF = 1232.0;     // [cm] 12348
   Double_t BeamDetPosZToF = -95.3;  // [cm] 
@@ -9,7 +9,7 @@ void exp1811_sim_digi (Int_t nEvents = 1000) {
   // --------------- Target -------------------------------------------------
   //Double_t targetH2Thickness = 0.4;  // [cm] this parameter should coincide with target H2 thickness in /macro/geo/create_target_h2_geo.C
   //---------------------Files-----------------------------------------------
-  TString outFile= "sim_digi.root";
+  TString outFile= "sim_digi_1811.root";
   TString parFile= "par.root";
   TString workDirPath = gSystem->Getenv("VMCWORKDIR");
   TString paramFileQTelescope = workDirPath
@@ -171,6 +171,7 @@ void exp1811_sim_digi (Int_t nEvents = 1000) {
 
   ERBeamDetTrackFinder* trackFinder = new ERBeamDetTrackFinder(verbose);
   trackFinder->SetTargetVolume("tubeD2");
+  run->AddTask(trackFinder);
   //-------Set visualisation flag to true------------------------------------
   run->SetStoreTraj(kTRUE);
   //-------Set LOG verbosity  ----------------------------------------------- 

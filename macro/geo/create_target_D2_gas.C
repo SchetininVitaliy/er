@@ -87,12 +87,12 @@ void create_target_D2_gas() {
   TGeoVolume* target = new TGeoVolumeAssembly("target");
   // --------------------------------------------------------------------------
   // box of stainless steel
-  Double_t box_X,box_Y,box_Z; // box of steel
+  Double_t box_X, box_Y, box_Z; // box of stainless steel outside
   Double_t R_gas = 2.7; // [cm]
 
   box_X = 5.4; // [cm]
   box_Y = 7.7; // [cm]
-  box_Z = 0.63; // [cm]
+  box_Z = 0.62; // [cm]
   
   box_X /= 2.;
   box_Y /= 2.;
@@ -115,10 +115,10 @@ void create_target_D2_gas() {
   TGeoVolume* boxST = new TGeoVolume("boxST", steel_box, pSteel);
   boxST->SetLineColor(kBlue);
   boxST->SetTransparency(60);
-
-  target->AddNode(boxST, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
-
   // --------------------------------------------------------------------------
+  target->AddNode(boxST, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
+  // --------------------------------------------------------------------------
+
   // --------------------------------------------------------------------------
     // create 2 mylar windows in front and back of the gas
       // --------------------------------------------------------------------------
@@ -129,67 +129,70 @@ void create_target_D2_gas() {
   entry->SetLineColor(kGray);
   entry->SetTransparency(60);
 
-  TGeoVolume *exit = gGeoMan->MakeTube("exit", pMylar, 0., box_X, tubeZ);
+  TGeoVolume *exit = gGeoMan->MakeTube( "exit",  pMylar, 0., box_X, tubeZ);
   exit->SetLineColor(kGray);
   exit->SetTransparency(60);
-
-  target->AddNode(exit, 0, new TGeoCombiTrans( trans_X, trans_Y, 1.6, fZeroRotation));
+  // --------------------------------------------------------------------------
+  target->AddNode(exit,  0, new TGeoCombiTrans( trans_X, trans_Y,  1.6, fZeroRotation));
   target->AddNode(entry, 0, new TGeoCombiTrans( trans_X, trans_Y, -1.6, fZeroRotation));
   // --------------------------------------------------------------------------
-    // --------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------
+    // create a target D2
       // --------------------------------------------------------------------------
-        // create a target D2
   Double_t R_min, R_max, thsp_min, thsp_max; // create 2 sphere in front and back of 
 
   thsp_min = 0.; 
   thsp_max = 16.95/2.;
-  R_min = 8.903;   //[cm]
-  R_max = R_min + 0.3; //[cm]
+  R_max = 9.163;   //[cm] 8.903
+  R_min = R_max - 0.31; //[cm]
 
-  TGeoSphere *sector1 = new TGeoSphere("sector1", R_min, R_max, thsp_min, thsp_max, 0., 360.);
+  TGeoSphere *sector_thick = new TGeoSphere("sector_thick", R_min, R_max, thsp_min, thsp_max, 0., 360.);
 
   TGeoCombiTrans* trans1 = new TGeoCombiTrans("trans1", trans_X, trans_Y, - box_Z + R_max - 0.1, fRotX);
   trans1->RegisterYourself();
-  TGeoCombiTrans* trans2 = new TGeoCombiTrans("trans2", trans_X, trans_Y, box_Z - R_max + 0.1 ,fZeroRotation); 
+  TGeoCombiTrans* trans2 = new TGeoCombiTrans("trans2", trans_X, trans_Y,   box_Z - R_max + 0.1 ,fZeroRotation); 
   trans2->RegisterYourself();
-  // tube of D2
-  TGeoTube tubeD = TGeoTube("tubeD", 0., R_gas, box_Z);
 
-  TGeoCompositeShape *D2_shape = new TGeoCompositeShape("D2_shape", "tubeD + (sector1:trans1  + sector1:trans2)");
+  // tube of D2 inside
+  TGeoTube tubeD = TGeoTube("tubeD", 0., R_gas, box_Z + 0.005);
+
+  TGeoCompositeShape *D2_shape = new TGeoCompositeShape("D2_shape", "tubeD + (sector_thick:trans1  + sector_thick:trans2)");
   TGeoVolume* tubeD2 = new TGeoVolume("tubeD2", D2_shape, pD2);
   tubeD2->SetLineColor(kRed);
   
-  target->AddNode(tubeD2, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
-// --------------------------------------------------------------------------
-    // --------------------------------------------------------------------------
+  // 2 Stainless Steel 6 Um outside
   R_max = 9.163;
   R_min = R_max - 0.0006;
 
-  TGeoSphere *sector2 = new TGeoSphere("sector2", R_min, R_max, thsp_min, thsp_max, 0., 360.);
-  TGeoVolume *SSteel = new TGeoVolume("SSteel", sector2, pSteel);
+  TGeoSphere *sector_thin = new TGeoSphere("sector_thin", R_min, R_max, thsp_min, thsp_max, 0., 360.);
+  TGeoVolume *SSteel = new TGeoVolume("SSteel", sector_thin, pSteel);
   SSteel->SetLineColor(kBlue);
-  SSteel->SetTransparency(70);
-
+  SSteel->SetTransparency(90);
+  // --------------------------------------------------------------------------
   tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y, - box_Z + R_max - 0.1, fRotX));
-  tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y, box_Z - R_max + 0.1 ,fZeroRotation));
-// --------------------------------------------------------------------------
-    // --------------------------------------------------------------------------
+  tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y,   box_Z - R_max + 0.1 ,fZeroRotation));
+  target->AddNode(tubeD2, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
+  // --------------------------------------------------------------------------
+   
+  // --------------------------------------------------------------------------
+    // create 2 copper
       // --------------------------------------------------------------------------
-        // create 2 copper
   TGeoPcon *copper_shape = new TGeoPcon("copper_shape", 0., 360., 3);
-  copper_shape->DefineSection(0, 0., R_gas, box_X);
+  copper_shape->DefineSection(0, 0.,  R_gas, box_X);
   copper_shape->DefineSection(1, 0.1, R_gas, box_X);
   copper_shape->DefineSection(2, 0.7, R_gas + 0.6, box_X);
 
   TGeoVolume *copper = new TGeoVolume("copper", copper_shape, pCopper);
   copper->SetLineColor(kYellow);
   copper->SetLineColor(20);
-  
-  target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y, box_Z, fZeroRotation));
+  // --------------------------------------------------------------------------
+  target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y,  box_Z, fZeroRotation));
   target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y, -box_Z, fRotY));
   // --------------------------------------------------------------------------
   top->AddNode(target, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
   // --------------------------------------------------------------------------
+
   gGeoMan->CloseGeometry();
   gGeoMan->CheckOverlaps();
   gGeoMan->CheckGeometryFull();
@@ -201,6 +204,7 @@ void create_target_D2_gas() {
   TFile* geoFile = new TFile(geoFileName, "RECREATE");
   top->Write();
   geoFile->Close();
-  // --------------------------------------------------------------------------
+
+  // ---------------------------------THE-ENDDDDDD ^_^ -----------------------------------------
 } 
 
