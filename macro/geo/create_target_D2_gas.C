@@ -97,21 +97,21 @@ void create_target_D2_gas() {
   box_X /= 2.;
   box_Y /= 2.;
   box_Z /= 2.;
+  box_Z += 0.1; //increase the thickness of the gas is 1 mm
   R_gas /= 2.;
   // --------------------------------------------------------------------------
-  TGeoBBox box1 = TGeoBBox("box1", box_X, box_Y, box_Z);
-  TGeoTube tube1 = TGeoTube("tube1", 0., R_gas, box_Z);
+  TGeoBBox box1  = TGeoBBox("box1",  box_X, box_Y, box_Z - 0.1);
+  TGeoTube tube1 = TGeoTube("tube1", 0., R_gas + 0.12 , box_Z - 0.1); 
 
-  /*TGeoCombiTrans *trans_box1 = new TGeoCombiTrans ("trans_box1", 
-                                                    trans_X, trans_Y, trans_Z, fZeroRotation);
-  trans_box1->RegisterYourself();
+  TGeoCombiTrans *trans_box1 = new TGeoCombiTrans ("trans_box1", 
+                                                    trans_X,   1.15,  trans_Z, fZeroRotation); //the distance is 11.5 mm 
+  trans_box1->RegisterYourself();//the hole is not in the center of the box which is made of stainless steel. 
   TGeoCombiTrans *trans_tube1 = new TGeoCombiTrans ("trans_tube1", 
                                                     trans_X, trans_Y, trans_Z, fZeroRotation);
   trans_tube1->RegisterYourself();
 
-  TGeoCompositeShape *steel_box = new TGeoCompositeShape("steel_box", "box1:trans_box1 - tube1:trans_tube1"); */
+  TGeoCompositeShape *steel_box = new TGeoCompositeShape("steel_box", "box1:trans_box1 - tube1:trans_tube1"); 
 
-  TGeoCompositeShape *steel_box = new TGeoCompositeShape("steel_box", "box1 - tube1");
   TGeoVolume* boxST = new TGeoVolume("boxST", steel_box, pSteel);
   boxST->SetLineColor(kBlue);
   boxST->SetTransparency(60);
@@ -133,8 +133,8 @@ void create_target_D2_gas() {
   exit->SetLineColor(kGray);
   exit->SetTransparency(60);
   // --------------------------------------------------------------------------
-  target->AddNode(exit,  0, new TGeoCombiTrans( trans_X, trans_Y,  1.6, fZeroRotation));
-  target->AddNode(entry, 0, new TGeoCombiTrans( trans_X, trans_Y, -1.6, fZeroRotation));
+  target->AddNode(exit,  0, new TGeoCombiTrans(trans_X, trans_Y,  1.6, fZeroRotation));
+  target->AddNode(entry, 0, new TGeoCombiTrans(trans_X, trans_Y, -1.6, fZeroRotation));
   // --------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------
@@ -143,21 +143,21 @@ void create_target_D2_gas() {
   Double_t R_min, R_max, thsp_min, thsp_max; // create 2 sphere in front and back of 
 
   thsp_min = 0.; 
-  thsp_max = 16.95/2.;
-  R_max = 9.163;   //[cm] 8.903
-  R_min = R_max - 0.31; //[cm]
+  thsp_max = 9.105; // 16.95/2
+  R_min = 9.163;   //[cm] 8.903
+  R_max = R_min + 0.31; //[cm]
 
   TGeoSphere *sector_thick = new TGeoSphere("sector_thick", R_min, R_max, thsp_min, thsp_max, 0., 360.);
 
-  TGeoCombiTrans* trans1 = new TGeoCombiTrans("trans1", trans_X, trans_Y, - box_Z + R_max - 0.1, fRotX);
+  TGeoCombiTrans* trans1 = new TGeoCombiTrans("trans1", trans_X, trans_Y, - box_Z + R_min, fRotX);
   trans1->RegisterYourself();
-  TGeoCombiTrans* trans2 = new TGeoCombiTrans("trans2", trans_X, trans_Y,   box_Z - R_max + 0.1 ,fZeroRotation); 
+  TGeoCombiTrans* trans2 = new TGeoCombiTrans("trans2", trans_X, trans_Y,   box_Z - R_min, fZeroRotation); 
   trans2->RegisterYourself();
 
   // tube of D2 inside
-  TGeoTube tubeD = TGeoTube("tubeD", 0., R_gas, box_Z + 0.005);
+  TGeoTube tubeD = TGeoTube("tubeD", 0., R_gas + 0.1, box_Z);
 
-  TGeoCompositeShape *D2_shape = new TGeoCompositeShape("D2_shape", "tubeD + (sector_thick:trans1  + sector_thick:trans2)");
+  TGeoCompositeShape *D2_shape = new TGeoCompositeShape("D2_shape", "tubeD - ( sector_thick : trans1 + sector_thick : trans2 )");
   TGeoVolume* tubeD2 = new TGeoVolume("tubeD2", D2_shape, pD2);
   tubeD2->SetLineColor(kRed);
   
@@ -170,8 +170,8 @@ void create_target_D2_gas() {
   SSteel->SetLineColor(kBlue);
   SSteel->SetTransparency(90);
   // --------------------------------------------------------------------------
-  tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y, - box_Z + R_max - 0.1, fRotX));
-  tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y,   box_Z - R_max + 0.1 ,fZeroRotation));
+  tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y, - box_Z + R_max, fRotX));
+  tubeD2->AddNode(SSteel, 0, new TGeoCombiTrans(trans_X, trans_Y,   box_Z - R_max ,fZeroRotation));
   target->AddNode(tubeD2, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
   // --------------------------------------------------------------------------
    
@@ -187,8 +187,8 @@ void create_target_D2_gas() {
   copper->SetLineColor(kYellow);
   copper->SetLineColor(20);
   // --------------------------------------------------------------------------
-  target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y,  box_Z, fZeroRotation));
-  target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y, -box_Z, fRotY));
+  target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y,  box_Z -0.099, fZeroRotation));
+  target->AddNode(copper, 0, new TGeoCombiTrans(trans_X, trans_Y, -box_Z +0.099, fRotY));
   // --------------------------------------------------------------------------
   top->AddNode(target, 0, new TGeoCombiTrans(trans_X, trans_Y, trans_Z, fZeroRotation));
   // --------------------------------------------------------------------------
