@@ -1,4 +1,4 @@
-void exp1811_sim_digi (Int_t nEvents = 10000) {
+void exp1811_sim_digi (Int_t nEvents = 1000) {
 //----------------------------------
   Double_t BeamDetLToF = 1232.0;     // [cm] 12348
   Double_t BeamDetPosZToF = -95.3;  // [cm] 
@@ -78,7 +78,7 @@ void exp1811_sim_digi (Int_t nEvents = 10000) {
   ERQTelescopeGeoComponentDoubleSi* thick1_Left = new ERQTelescopeGeoComponentDoubleSi("DoubleSi", "DoubleSi_DSD_L", 
                                                                                   TVector3(0., 0., 0.), TVector3(), "X");
   ERQTelescopeGeoComponentSingleSi* thick2_Left = new ERQTelescopeGeoComponentSingleSi("SingleSi", "SingleSi_SSD_L", 
-                                                                                  TVector3(0., 0., 1.0), TVector3(), "Y");
+                                                                                  TVector3(0., 0., 1.0), TVector3(), "X");
   assembly_Left->AddComponent(thin_Left);
   assembly_Left->AddComponent(thick1_Left);
   assembly_Left->AddComponent(thick2_Left);
@@ -114,7 +114,7 @@ void exp1811_sim_digi (Int_t nEvents = 10000) {
   ERQTelescopeGeoComponentSingleSi* thick1_Right = new ERQTelescopeGeoComponentSingleSi("SingleSi", "SingleSi_SSD_R", 
                                                                                   TVector3(0., 0., 0.), TVector3(), "Y");
   ERQTelescopeGeoComponentSingleSi* thick2_Right = new ERQTelescopeGeoComponentSingleSi("SingleSi", "SingleSi_SSD_R", 
-                                                                                  TVector3(0., 0., 1.), TVector3(), "X");
+                                                                                  TVector3(0., 0., 1.), TVector3(), "Y");
   assembly_Right->AddComponent(thin_Right);
   assembly_Right->AddComponent(thick1_Right);
   assembly_Right->AddComponent(thick2_Right);
