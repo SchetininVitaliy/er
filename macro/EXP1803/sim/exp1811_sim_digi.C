@@ -1,4 +1,4 @@
-void exp1811_sim_digi (Int_t nEvents = 1000) {
+void exp1811_sim_digi (Int_t nEvents = 100000) {
 //----------------------------------
   Double_t BeamDetLToF = 1232.0;     // [cm] 12348
   Double_t BeamDetPosZToF = -95.3;  // [cm] 
@@ -10,7 +10,7 @@ void exp1811_sim_digi (Int_t nEvents = 1000) {
   //Double_t targetH2Thickness = 0.4;  // [cm] this parameter should coincide with target H2 thickness in /macro/geo/create_target_h2_geo.C
   //---------------------Files-----------------------------------------------
   TString outFile= "sim_digi_1811.root";
-  TString parFile= "par.root";
+  TString parFile= "par_1811.root";
   TString workDirPath = gSystem->Getenv("VMCWORKDIR");
   TString paramFileQTelescope = workDirPath
                          + "/db/QTelescope/QTelescopeParts2.xml";
@@ -56,7 +56,7 @@ void exp1811_sim_digi (Int_t nEvents = 1000) {
   // setupBeamDet->SetSensitiveTarget();
 
   // -----   Create target  -------------------------------------------------
-  FairModule* target = new ERTarget("targetH2", kTRUE, 1);
+  FairModule* target = new ERTarget("targetD2", kTRUE, 1);
   target->SetGeometryFileName(targetGeoFileName);
   run->AddModule(target);
 
@@ -187,7 +187,7 @@ void exp1811_sim_digi (Int_t nEvents = 1000) {
   rtdb->saveOutput();
   rtdb->print();
 
-  run->CreateGeometryFile("setup2_exp1811.root");
+  run->CreateGeometryFile("setup_exp1811.root");
   // -----   Run simulation  ------------------------------------------------
   run->Run(nEvents);
 
