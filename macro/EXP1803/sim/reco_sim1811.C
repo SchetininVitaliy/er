@@ -1,16 +1,14 @@
-void reco_exp1811(Int_t nEvents = 1200){
+void reco_sim1811(Int_t nEvents = 10){
   //---------------------Files-----------------------------------------------
   TString inFile = "sim_digi_1811.root";
-  TString outFile = "reco_sim_exp1811.root";
+  TString outFile = "reco_sim_1811.root";
   TString parFile = "par_1811.root";
-  TString geoFile = "setup_exp1811.root";
+  TString parOutFile = "parOut_1811.root";
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();  
   // -----   Digitization run   ---------------------------------------------
   ERRunAna *run = ERRunAna::Instance();
-  //run->SetUserCut("EventHeader.fTrigger==1");
-  run->SetGeomFile(geoFile);
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
   // ------------------------------------------------------------------------
@@ -29,10 +27,11 @@ void reco_exp1811(Int_t nEvents = 1200){
   pid->SetBoxPID(0., 1000., 0., 1000.);
   pid->SetOffsetToF(0.);
   pid->SetProbabilityThreshold(0);
-  pid->SetIonMass(7.60554); //????
+  pid->SetIonMass(7.5061760); //????
   pid->SetPID(1000020080);
   run->AddTask(pid);
   // ------- QTelescope TrackFinder -------------------------------------------
+  /*
   ERQTelescopeTrackFinder* qtelescopeTrackFinder = new ERQTelescopeTrackFinder(verbose);
 
   qtelescopeTrackFinder->SetHitStation("Left_telescope", "Left_telescope_SingleSi_SSD20_L_X_0");
@@ -57,19 +56,23 @@ void reco_exp1811(Int_t nEvents = 1200){
 
   // qtelescopePID->SetUserCut("ERQTelescopeSiDigi_T2_DoubleSi_SD2_XY_1_X.fEdep>0.009");
 
-  qtelescopePID->SetStationParticle("Central_telescope_DoubleSi_DSD_C_XY_0",1000010030);
+  qtelescopePID->SetStationParticle("Central_telescope_DoubleSi_DSD_C_XY_0", 1000010030);
+  qtelescopePID->SetStationParticle("Central_telescope_CsI_0", 1000010030);
 
-  qtelescopePID->SetStationParticle("Left_telescope_DoubleSi_DSD_L_XY_0",1000020030);
-  qtelescopePID->SetStationParticle("Left_telescope_SingleSi_SSD_L_X_0",1000020030);
+  qtelescopePID->SetStationParticle("Left_telescope_SingleSi_SSD20_L_X_0", 1000020030);
+  qtelescopePID->SetStationParticle("Left_telescope_DoubleSi_DSD_L_XY_0", 1000020030);
+  qtelescopePID->SetStationParticle("Left_telescope_SingleSi_SSD_L_X_0", 1000020030);
 
-  qtelescopePID->SetStationParticle("Right_telescope_SingleSi_SSDY_R_Y_0",1000020030);
-  qtelescopePID->SetStationParticle("Right_telescope_SingleSi_SSD_R_Y_0",1000020030);
+  qtelescopePID->SetStationParticle("Right_telescope_SingleSi_SSD20_R_X_0", 1000020030);
+  qtelescopePID->SetStationParticle("Right_telescope_SingleSi_SSDY_R_Y_0", 1000020030);
+  qtelescopePID->SetStationParticle("Right_telescope_SingleSi_SSD_R_Y_0", 1000020030);
 
-  run->AddTask(qtelescopePID); 
+  run->AddTask(qtelescopePID); */
   // -----------Runtime DataBase info ---------------------------------------
   FairRuntimeDb* rtdb = run->GetRuntimeDb();
   FairParRootFileIo*  parIO = new FairParRootFileIo();
   parIO->open(parFile.Data(), "UPDATE");
+  rtdb->setFirstInput(parIO);
   // -----   Intialise and run   --------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
   
