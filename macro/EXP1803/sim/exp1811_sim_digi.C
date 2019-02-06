@@ -1,4 +1,4 @@
-void exp1811_sim_digi (Int_t nEvents = 10) {
+void exp1811_sim_digi (Int_t nEvents = 2) {
 //----------------------------------
   Double_t BeamDetLToF = 1232.0;     // [cm] 12348
   Double_t BeamDetPosZToF = -95.3;  // [cm] 
@@ -52,18 +52,16 @@ void exp1811_sim_digi (Int_t nEvents = 10) {
   setupBeamDet->AddToF("ToF1", BeamDetPosZToF - BeamDetLToF);     
   setupBeamDet->AddToF("ToF1", BeamDetPosZToF);    //  BeamDet parts should be added in ascending order   
   setupBeamDet->AddMWPC("MWPC1", BeamDetPosZ1MWPC);   //  of Z-coordinate of part.
-  // The inverse order of numbering it is the order when wire number increase while coordinate of wires decreasing.
-  // Methods must be called after the proper MWPC station if direct numbering order should be inversed.
-      // Set the inverse order of wires numbering in Y plane. 
   setupBeamDet->SetMWPCnumberingInvOrderX(); 
 
   setupBeamDet->AddMWPC("MWPC1", BeamDetPosZ2MWPC);    
-  setupBeamDet->SetMWPCnumberingInvOrderX();
-  // setupBeamDet->SetSensitiveTarget();
+  setupBeamDet->SetMWPCnumberingInvOrderX(); 
+
+  //setupBeamDet->SetSensitiveTarget();
 
 
   // -----   Create target  -------------------------------------------------
-  FairModule* target = new ERTarget("targetH2", kTRUE, 1);
+  FairModule* target = new ERTarget("target", kTRUE, 1);
   target->SetGeometryFileName(targetGeoFileName);
   run->AddModule(target);
 
@@ -157,13 +155,13 @@ void exp1811_sim_digi (Int_t nEvents = 10) {
 
 /////////////////////////////////////////////////////////////////////////////
   // ------- Decayer --------------------------------------------------------
-  /*
+  
   Double_t massH7 = 7.5061760;  // [GeV]
 
   ERDecayer* decayer = new ERDecayer();
   ERDecayEXP1811* targetDecay = new ERDecayEXP1811();
 
-  targetDecay->SetInteractionVolumeName("target");
+  targetDecay->SetInteractionVolumeName("tubeD2");
   targetDecay->SetNuclearInteractionLength(1e-3);
   //targetDecay->SetAngularDistribution("Cs_6He_d_3He_5H_35-25AMeV.txt");
   targetDecay->SetTargetThickness(targetD2Thickness);
@@ -189,10 +187,6 @@ void exp1811_sim_digi (Int_t nEvents = 10) {
 
   run->AddTask(qtelescopeDigitizer);
 
-  // ------  Gadast Digitizer -----------------------------------------------
-  ERGadastDigitizer* gadastDigitizer = new ERGadastDigitizer(verbose);
-  //run->AddTask(gadastDigitizer);
-*/
   // -----  BeamDet Digitizer ----------------------------------------------
   ERBeamDetDigitizer* beamDetDigitizer = new ERBeamDetDigitizer(verbose);
   //beamDetDigitizer->SetMWPCElossThreshold(0.006);
@@ -207,11 +201,20 @@ void exp1811_sim_digi (Int_t nEvents = 10) {
 
   run->AddTask(trackFinder);
 
+  // -----------------------BeamDetTrackPID----------------------------------
+  ERBeamDetPID* pid = new ERBeamDetPID(verbose);
+  pid->SetBoxPID(0., 1000., 0., 1000.);
+  pid->SetOffsetToF(0.);
+  pid->SetProbabilityThreshold(0);
+  pid->SetIonMass(7.5061760); //????
+  pid->SetPID(1000020080);
+  run->AddTask(pid);
+
   //-------Set visualisation flag to true------------------------------------
   run->SetStoreTraj(kTRUE);
 
   //-------Set LOG verbosity  ----------------------------------------------- 
-  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
 
   // -----   Initialize simulation run   ------------------------------------
   run->Init();
@@ -228,7 +231,7 @@ void exp1811_sim_digi (Int_t nEvents = 10) {
   run->CreateGeometryFile("setup_exp1811.root");
 
   // -----   Run simulation  ------------------------------------------------
-  run->Run(0, nEvents);
+  run->Run(nEvents);
 
   // -----   Finish   -------------------------------------------------------
   timer.Stop();

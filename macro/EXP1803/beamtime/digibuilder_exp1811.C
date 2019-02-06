@@ -1,24 +1,37 @@
-void digibuilder_exp1811(Int_t nEvents = 1443710)
+void digibuilder_exp1811(Int_t nEvents = 100000)
 {
   TString inputdir = gSystem->Getenv("VMCWORKDIR");
-  inputdir = inputdir + "/macro/EXP1803/beamtime/";
+  inputdir = inputdir + "/showBeam_VC/raw/";
 
 	TString inFile = inputdir + "he8_10_0010.root";
   TString confFile = inputdir + "setup_exp1811.xml";
 
-	// --- Specify output file name (this is just an example)
-	TString outFile = "he8_10_0010.Digi.root";
+  // --- Specify output file name (this is just an example)
+  TString outFile = "~/Acculinna/ER/showBeam_VC/analysed/he8_10_0010.Ivan.root";
 
   std::cout << ">>> input  file is " << inFile  << std::endl;
   std::cout << ">>> output file is " << outFile << std::endl;
 
   // --- Source task
+  TString cut("");
+  cut+=("DetEventCommon.trigger!=1 && ");
+  cut+=("Beam_detector_MWPC1.@fData.GetEntries()>0 && ");
+  //cut+=("Beam_detector_MWPC1.@fData.GetEntries()>0 && ");
+  cut+=("Beam_detector_MWPC2.@fData.GetEntries()>0 && ");
+  cut+=("Beam_detector_MWPC3.@fData.GetEntries()>0 && ");
+  cut+=("Beam_detector_MWPC4.@fData.GetEntries()>0 && ");
+  cut+=("Beam_detector_F3.@fData.GetEntries()==4 && ");
+  cut+=("Beam_detector_F5.@fData.GetEntries()==4");
+
   ERDigibuilder* builder = new ERDigibuilder();
   builder->SetConfigurationFile(confFile);
-  //builder->SetUserCut("Beam_detector_F3.@fDetMessages.GetEntriesFast() == 4",kFALSE);
+  //builder->SetUserCut("Beam_detector_F3.@fData.GetEntriesFast() == 4",kFALSE);
+  builder->SetUserCut(cut.Data(), kFALSE);
   builder->AddFile(inFile);
 
+// -------------------------------------------------------------------------------------
   ERBeamDetUnpack* beamDetUnpack = new ERBeamDetUnpack("Beam_detector");
+  beamDetUnpack->SetTimeCalibrationConst(0.0625);
 // -------------------------------------------------------------------------------------
  
   ERTelescopeUnpack* rtUnpack = new ERTelescopeUnpack("Right_telescope");
@@ -70,6 +83,7 @@ void digibuilder_exp1811(Int_t nEvents = 1443710)
   builder->AddUnpack(rtUnpack);
   builder->AddUnpack(ltUnpack);
   builder->AddUnpack(ctUnpack);  
+
   // --- Run
   FairRunOnline *run = new FairRunOnline(builder);
   run->SetOutputFile(outFile);

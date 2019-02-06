@@ -70,42 +70,43 @@ Bool_t ERBeamDetTrackFinder::IsCluster (TClonesArray* digiArray) {
     ERBeamDetMWPCDigi* digiNeigborWire  = (ERBeamDetMWPCDigi*)digiArray->At(i + 1);
     if((digiNeigborWire->GetWireNb() - digi->GetWireNb()) != 1){;
       isCluster = kFALSE;
-      FairRun* run = FairRun::Instance();
-      run->MarkFill(kFALSE);
+      //FairRun* run = FairRun::Instance();
+      //run->MarkFill(kFALSE);
       break;
     }
   }
   return isCluster;
 }
 
-Double_t ERBeamDetTrackFinder::CalcCoordinateAvg (TClonesArray* digiArray, char coordType) {
+Double_t ERBeamDetTrackFinder::CalcCoordinateAvg (TClonesArray* digiArray, int coordType) {
   ERBeamDetMWPCDigi* digiFirstInCluster = (ERBeamDetMWPCDigi*)digiArray->At(0);
   ERBeamDetMWPCDigi* digiLastInCluster  = (ERBeamDetMWPCDigi*)digiArray->At(digiArray->GetEntries() - 1);
   Double_t coordAvg;
   switch (coordType) {
-    case 'X' :  coordAvg = 0.5*(fBeamDetSetup->WireX(digiFirstInCluster->GetMWPCNb()-1, 
+    case '0' :  coordAvg = 0.5*(fBeamDetSetup->WireX(digiFirstInCluster->GetMWPCNb()-1, 
                                                      digiFirstInCluster->GetPlaneNb()-1, 
                                                      digiFirstInCluster->GetWireNb()-1) 
                                 + 
                                 fBeamDetSetup->WireX(digiLastInCluster->GetMWPCNb()-1, 
                                                      digiLastInCluster->GetPlaneNb()-1, 
                                                      digiLastInCluster->GetWireNb()-1));  
-
-    case 'Y' :  coordAvg = 0.5*(fBeamDetSetup->WireY(digiFirstInCluster->GetMWPCNb()-1, 
+                                break;
+    case '1' :  coordAvg = 0.5*(fBeamDetSetup->WireY(digiFirstInCluster->GetMWPCNb()-1, 
                                                      digiFirstInCluster->GetPlaneNb()-1, 
                                                      digiFirstInCluster->GetWireNb()-1) 
                                 + 
                                 fBeamDetSetup->WireY(digiLastInCluster->GetMWPCNb()-1, 
                                                      digiLastInCluster->GetPlaneNb()-1, 
                                                      digiLastInCluster->GetWireNb()-1)); 
-
-    case 'Z' :  coordAvg = 0.5*(fBeamDetSetup->WireZ(digiFirstInCluster->GetMWPCNb()-1, 
+                                break;
+    case '2' :  coordAvg = 0.5*(fBeamDetSetup->WireZ(digiFirstInCluster->GetMWPCNb()-1, 
                                                      digiFirstInCluster->GetPlaneNb()-1, 
                                                      digiFirstInCluster->GetWireNb()-1) 
                                 + 
                                 fBeamDetSetup->WireZ(digiLastInCluster->GetMWPCNb()-1, 
                                                      digiLastInCluster->GetPlaneNb()-1, 
                                                      digiLastInCluster->GetWireNb()-1)); 
+                                break;
     default:  LOG(DEBUG) << "ERBeamDetTrackFinder::CalcCoordinateAvg: Unknown coordinate type " 
                          << FairLogger::endl;
   }
@@ -117,7 +118,17 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
 { 
   Reset();
   LOG(DEBUG) << FairLogger::endl;
-
+/*
+  if(fBeamDetMWPCDigiX1->GetEntriesFast() != 1 ||
+     fBeamDetMWPCDigiX2->GetEntriesFast() != 1 ||
+     fBeamDetMWPCDigiY1->GetEntriesFast() != 1 || 
+     fBeamDetMWPCDigiY2->GetEntriesFast() != 1 ) {
+    LOG(DEBUG) << "Multiplicity more than one" << FairLogger::endl;
+    FairRun* run = FairRun::Instance();
+    run->MarkFill(kFALSE);
+    return ;
+  }   // switch on if you would like to use the wire.
+ */
   if(fBeamDetMWPCDigiX1->GetEntriesFast() < 1 ||
      fBeamDetMWPCDigiX2->GetEntriesFast() < 1 ||
      fBeamDetMWPCDigiY1->GetEntriesFast() < 1 || 
@@ -126,7 +137,7 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
     FairRun* run = FairRun::Instance();
     run->MarkFill(kFALSE);
     return ;
-  }
+}     // default is Cluster in ER, always switch on 
 
   Double_t xFar, yFar, zFar; 
   Double_t xClose, yClose, zClose;
@@ -139,8 +150,13 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
   if(fBeamDetMWPCDigiX1->GetEntriesFast() > 1) { // If multiplicity in wires array is more than one 
     cluster = IsCluster (fBeamDetMWPCDigiX1);    // check that all wires in array have are neigbours
     if(cluster) {
-      xFar = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiX1, 'X'); // calculate average coordinate of wires
-      zFar = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiX1, 'Z');
+      xFar = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiX1, '0'); // calculate average coordinate of wires
+      zFar = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiX1, '2');
+    }
+    else {
+      FairRun* run = FairRun::Instance();
+      run->MarkFill(kFALSE);
+      return;  
     }
   } else {  // only one wire in array
     digi = (ERBeamDetMWPCDigi*)fBeamDetMWPCDigiX1->At(0); 
@@ -152,7 +168,11 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
   if(fBeamDetMWPCDigiX2->GetEntriesFast() > 1) { // If multiplicity in wires array is more than one 
     cluster = IsCluster (fBeamDetMWPCDigiX2);    // check that all wires in array have are neigbours
     if(cluster) {
-      xClose = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiX2, 'X'); // calculate average coordinate of wires
+      xClose = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiX2, '0'); // calculate average coordinate of wires
+    } else {
+      FairRun* run = FairRun::Instance();
+      run->MarkFill(kFALSE);
+      return;      
     }
   } else {  // only one wire in array
     digi = (ERBeamDetMWPCDigi*)fBeamDetMWPCDigiX2->At(0);
@@ -162,7 +182,11 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
   if(fBeamDetMWPCDigiY1->GetEntriesFast() > 1 ) { // If multiplicity in wires array is more than one 
     cluster = IsCluster (fBeamDetMWPCDigiY1);     // check that all wires in array have are neigbours
     if(cluster) {
-      yFar = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiY1, 'Y'); // calculate average coordinate of wires
+      yFar = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiY1, '1'); // calculate average coordinate of wires
+    } else {
+      FairRun* run = FairRun::Instance();
+      run->MarkFill(kFALSE);
+      return;      
     }
   } else {  // only one wire in array
     digi = (ERBeamDetMWPCDigi*)fBeamDetMWPCDigiY1->At(0);
@@ -172,8 +196,12 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
   if(fBeamDetMWPCDigiY2->GetEntriesFast() > 1 ) { // If multiplicity in wires array is more than one 
     cluster = IsCluster (fBeamDetMWPCDigiY2);     // check that all wires in array have are neigbours
     if(cluster) {
-      yClose = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiY2, 'Y'); // calculate average coordinate of wires
-      zClose = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiY2, 'Z'); 
+      yClose = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiY2, '1'); // calculate average coordinate of wires
+      zClose = ERBeamDetTrackFinder::CalcCoordinateAvg (fBeamDetMWPCDigiY2, '2'); 
+    } else {
+      FairRun* run = FairRun::Instance();
+      run->MarkFill(kFALSE);
+      return;      
     }
   } else { // only one wire in array
     digi = (ERBeamDetMWPCDigi*)fBeamDetMWPCDigiY2->At(0);
@@ -212,7 +240,7 @@ void ERBeamDetTrackFinder::Exec(Option_t* opt)
     }
   }
   if (!targetAffected){
-    LOG(WARNING) << "Tatget is not affected" << FairLogger::endl;
+    LOG(WARNING) << "Target is not affected" << FairLogger::endl;
     return;
   }
 
