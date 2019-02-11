@@ -103,7 +103,7 @@ private:
    ** @param digiArray   collection of digies
    ** @param coordType   type of coordinate (can take values 'X', 'Y' or 'Z')
   **/
-  Double_t CalcCoordinateAvg (TClonesArray* digiArray, char coordType);
+  Double_t CalcCoordinateAvg (TClonesArray* digiArray, int coordType);
 
 
   ClassDef(ERBeamDetTrackFinder,1)

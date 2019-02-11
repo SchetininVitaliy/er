@@ -116,4 +116,3 @@ private:
   ClassDef(ERBeamDetSetup,1)
 };
 #endif
-

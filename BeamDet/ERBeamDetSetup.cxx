@@ -77,8 +77,8 @@ vector<TString>  ERBeamDetSetup::fMWPCnumberingOrderY;
 vector<Double_t> ERBeamDetSetup::fPositionToF;
 vector<Double_t> ERBeamDetSetup::fPositionMWPC;
 // -------- fTarget parameters -----------------------------------------------
-Double_t ERBeamDetSetup::fTargetH2R = 10.;   //cm
-Double_t ERBeamDetSetup::fTargetH2Z = 0.4;   //cm
+Double_t ERBeamDetSetup::fTargetH2R = 1.5; //10.;   //cm
+Double_t ERBeamDetSetup::fTargetH2Z = 1e-10; //0.4;   //cm
 Double_t ERBeamDetSetup::fTargetShellThicknessSide = 20 * 1e-4;
 Double_t ERBeamDetSetup::fTargetShellThicknessZ = 6 * 1e-4;
 Bool_t   ERBeamDetSetup::fSensitiveTargetIsSet = false;
@@ -181,12 +181,22 @@ void ERBeamDetSetup::GetGeoParamsFromParContainer() {
             wirePlaneOrient = "X";
             fWires[mwpcNb][planeNb].insert(std::make_pair(wireNb, new ERBeamDetWire(globalCoords[0], 
                                                                                     globalCoords[1], 
+<<<<<<< HEAD
                                                                                     globalCoords[2])));
+=======
+                                                                                    mwpcStationZ)));
+                                                                                    //globalCoords[2])));
+>>>>>>> 0663e9c859c689a6c27072b3c1b4b32c7b8e5a0f
           } else {
             wirePlaneOrient = "Y";
             fWires[mwpcNb][planeNb].insert(std::make_pair(wireNb, new ERBeamDetWire(globalCoords[0], 
                                                                                     globalCoords[1], 
+<<<<<<< HEAD
                                                                                     globalCoords[2])));
+=======
+                                                                                    mwpcStationZ)));
+                                                                                    //globalCoords[2])));
+>>>>>>> 0663e9c859c689a6c27072b3c1b4b32c7b8e5a0f
           }
           
           LOG(DEBUG) << "Wire" << wirePlaneOrient << " " << wireNb 
@@ -649,8 +659,8 @@ void ERBeamDetSetup::ConstructGeometry() {
     targetShell->AddNode(targetH2, 1, new TGeoCombiTrans(.0, .0, .0, fZeroRotation));
     target->AddNode(targetShell, 1, new TGeoCombiTrans(.0,.0,.0, fZeroRotation)); 
 
-    beamdet->AddNode(target, 1, new TGeoCombiTrans(transTargetX, transTargetY, transTargetZ, fRotationY));
-  }
+    beamdet->AddNode(target, 1, new TGeoCombiTrans(transTargetX, transTargetY, transTargetZ, fZeroRotation));
+  }                                                                                           //fRotationY
   // ----------------- MWPC ---------------------------------------------------
   vector<TGeoVolume*> gasVol;
   vector<TGeoVolume*> MWPC;
