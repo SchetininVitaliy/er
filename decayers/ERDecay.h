@@ -55,7 +55,7 @@ protected:
              interaction volume;
   **/  
   Bool_t FindInteractionPoint();
-  // void   CalculateTargetParameters();
+  void   CalculateTargetParameters();
   
   Bool_t   fIsInterationPointFound;
   Double_t fDistanceToInteractPoint;

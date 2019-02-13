@@ -103,20 +103,21 @@ void ERDecay::SetMaxPathLength(Double_t pathLength) {
   fNormalizingProbability = 1 - TMath::Exp(-pathLength / fNuclearInteractionLength); 
 }
 //--------------------------------------------------------------------------------------------------
-// void ERDecay::CalculateTargetParameters() {
-//   if (fInteractionVolumeName != "") {
-//     TGeoVolume* vol = gGeoManager->FindVolumeFast(fInteractionVolumeName);
-//     TGeoBBox*   shape = (TGeoBBox*)vol->GetShape(); // we use conversion of shape type to TGeoBBox because all shape types in ROOT inherited from TGeoBBox;
-//     Double_t    boundX = 2 * shape->GetDX();
-//     Double_t    boundY = 2 * shape->GetDY();
-//     Double_t    boundZ = 2 * shape->GetDZ();
-//     LOG(DEBUG) << "ERDecay: bounding box x = " << boundX 
-//               << "; y = " << boundY 
-//               << "; z = " << boundZ << FairLogger::endl;
-//     fTargetBoundBoxDiagonal = TMath::Sqrt(boundX*boundX + boundY*boundY + boundZ*boundZ);
-//     fNormalizingProbability = 1 - TMath::Exp(-fTargetBoundBoxDiagonal / fNuclearInteractionLength); 
-//   }
-// }
+void ERDecay::CalculateTargetParameters() {
+  LOG(DEBUG) << "ERDecay: calculated parameters " << FairLogger::endl;
+  if (fInteractionVolumeName != "") {
+    TGeoVolume* vol = gGeoManager->FindVolumeFast(fInteractionVolumeName);
+    TGeoBBox*   shape = (TGeoBBox*)vol->GetShape(); // we use conversion of shape type to TGeoBBox because all shape types in ROOT inherited from TGeoBBox;
+    Double_t    boundX = 2 * shape->GetDX();
+    Double_t    boundY = 2 * shape->GetDY();
+    Double_t    boundZ = 2 * shape->GetDZ();
+    LOG(DEBUG) << "ERDecay: bounding box x = " << boundX 
+              << "; y = " << boundY 
+              << "; z = " << boundZ << FairLogger::endl;
+    // fTargetBoundBoxDiagonal = TMath::Sqrt(boundX*boundX + boundY*boundY + boundZ*boundZ);
+    // fNormalizingProbability = 1 - TMath::Exp(-fTargetBoundBoxDiagonal / fNuclearInteractionLength); 
+  }
+}
 //--------------------------------------------------------------------------------------------------
 Bool_t ERDecay::FindInteractionPoint() {
   if (!fIsInterationPointFound) {
