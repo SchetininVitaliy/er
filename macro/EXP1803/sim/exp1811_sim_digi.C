@@ -1,3 +1,4 @@
+
 void exp1811_sim_digi (Int_t nEvents = 50) {
 //----------------------------------
   Double_t BeamDetLToF = 1232.0;     // [cm] 12348
@@ -135,7 +136,7 @@ void exp1811_sim_digi (Int_t nEvents = 50) {
 
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
 
-  Double_t  kinE_MevPerNucleon = 40.;
+  Double_t  kinE_MevPerNucleon = 30.;
 
   Int_t Z = 2, A = 8, Q = 2;
   TString ionName = "8He";
@@ -156,20 +157,22 @@ void exp1811_sim_digi (Int_t nEvents = 50) {
 /////////////////////////////////////////////////////////////////////////////
   // ------- Decayer --------------------------------------------------------
   
-  Double_t massH7 = 6.5696366;  // [GeV]
+  Double_t massH7 = 6.5691;//7.5061760;  // [GeV]
+
 
   ERDecayer* decayer = new ERDecayer();
   ERDecayEXP1811* targetDecay = new ERDecayEXP1811();
 
   targetDecay->SetInteractionVolumeName("tubeD2");
-  //targetDecay->SetNuclearInteractionLength(0.8);
+
+  targetDecay->SetNuclearInteractionLength(20.);
+
   //targetDecay->SetAngularDistribution("Cs_6He_d_3He_5H_35-25AMeV.txt");
-  targetDecay->SetTargetThickness(targetD2Thickness);
   targetDecay->SetH7Mass(massH7);
-  //targetDecay->SetH7Exitation(0.0004, 0.00002355, 1);
+  // targetDecay->SetH7Exitation(0.0004, 0.00002355, 1);
   //targetDecay->SetH7Exitation(0.0012, 0.0002355, 1);
   targetDecay->SetMinStep(1e-1);
-  targetDecay->SetMaxPathLength(2);
+  targetDecay->SetMaxPathLength(2./*2e-4 * 10 * 1.1*/);
 
   decayer->AddDecay(targetDecay);
   run->SetDecayer(decayer);
@@ -208,13 +211,13 @@ void exp1811_sim_digi (Int_t nEvents = 50) {
   pid->SetProbabilityThreshold(0);
   pid->SetIonMass(6.5696366); //????
   pid->SetPID(1000020080);
-  //run->AddTask(pid);
+  // run->AddTask(pid);
 
   //-------Set visualisation flag to true------------------------------------
   //run->SetStoreTraj(kTRUE);
 
   //-------Set LOG verbosity  ----------------------------------------------- 
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogScreenLevel("FATAL");
 
   // -----   Initialize simulation run   ------------------------------------
   run->Init();
@@ -243,6 +246,9 @@ void exp1811_sim_digi (Int_t nEvents = 50) {
   cout << "Parameter file is " << parFile << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime
           << "s" << endl << endl;
+  TDatabasePDG *tdb = TDatabasePDG::Instance();
+  tdb->Print();
+
 }
 
  

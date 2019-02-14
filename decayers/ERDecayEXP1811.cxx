@@ -119,7 +119,7 @@ Bool_t ERDecayEXP1811::Init() {
   } else {
     f7HMass = f7H->Mass(); // if user mass is not defined in ERDecayEXP1811::SetH7Mass() than get a GEANT mass
   }
-  // CalculateTargetParameters();
+  CalculateTargetParameters();
   return kTRUE;
 }
 
@@ -188,6 +188,7 @@ Bool_t ERDecayEXP1811::Stepping() {
         if((ECM - f3He->Mass() - decay7HMass) > 0) { // выход из цикла while для PhaseGenerator
           decayHappen = kTRUE;
         }
+        cout << "[ERDecayEXP1811::Stepping] mass" << endl;
       }
 
       PhaseGenerator(ECM, decay7HMass);
@@ -297,7 +298,7 @@ void ERDecayEXP1811::PhaseGenerator(Double_t Ecm, Double_t h7Mass) {
   Double_t m2 = f3He->Mass();
 
   // Energy of 1-st particle in cm.
-  //total energy of the first particle is calculated as
+  // total energy of the first particle is calculated as
   Double_t E1 = 0.5 * (Ecm * Ecm + m1 * m1 - m2 * m2) / Ecm;
 
   //Impulse in CM

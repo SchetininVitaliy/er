@@ -801,7 +801,7 @@ Double_t ERBeamDetSetup::CalcEloss(ERBeamDetTrack& track, Int_t pid, Float_t mom
     node = gGeoManager->Step();
   }
   
-  T += tarEdep/2.;
+  T += tarEdep/2.; // linear approximation. Modify if not sufficient.
   sumLoss -= tarEdep/2.;
   
   LOG(DEBUG) <<" [CalcEloss] Target Eloss = " <<  tarEdep << FairLogger::FairLogger::endl;
