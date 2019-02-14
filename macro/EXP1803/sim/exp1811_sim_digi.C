@@ -1,4 +1,4 @@
-void exp1811_sim_digi (Int_t nEvents = 2) {
+void exp1811_sim_digi (Int_t nEvents = 50) {
 //----------------------------------
   Double_t BeamDetLToF = 1232.0;     // [cm] 12348
   Double_t BeamDetPosZToF = -95.3;  // [cm] 
@@ -26,7 +26,7 @@ void exp1811_sim_digi (Int_t nEvents = 2) {
   ERRunSim* run = new ERRunSim();
   /** Select transport engine
   * TGeant3
-  * TGeant4
+  * TGeant4exp1811_sim_digi.C
   **/
   run->SetName("TGeant4");              // Transport engine
   run->SetOutputFile(outFile.Data());          // Output file
@@ -156,20 +156,20 @@ void exp1811_sim_digi (Int_t nEvents = 2) {
 /////////////////////////////////////////////////////////////////////////////
   // ------- Decayer --------------------------------------------------------
   
-  Double_t massH7 = 7.5061760;  // [GeV]
+  Double_t massH7 = 6.5696366;  // [GeV]
 
   ERDecayer* decayer = new ERDecayer();
   ERDecayEXP1811* targetDecay = new ERDecayEXP1811();
 
   targetDecay->SetInteractionVolumeName("tubeD2");
-  targetDecay->SetNuclearInteractionLength(1e-3);
+  //targetDecay->SetNuclearInteractionLength(0.8);
   //targetDecay->SetAngularDistribution("Cs_6He_d_3He_5H_35-25AMeV.txt");
   targetDecay->SetTargetThickness(targetD2Thickness);
   targetDecay->SetH7Mass(massH7);
   //targetDecay->SetH7Exitation(0.0004, 0.00002355, 1);
   //targetDecay->SetH7Exitation(0.0012, 0.0002355, 1);
-  targetDecay->SetMinStep(1e-5);
-  targetDecay->SetMaxPathLength(2e-4 * 10 * 1.1);
+  targetDecay->SetMinStep(1e-1);
+  targetDecay->SetMaxPathLength(2);
 
   decayer->AddDecay(targetDecay);
   run->SetDecayer(decayer);
@@ -206,12 +206,12 @@ void exp1811_sim_digi (Int_t nEvents = 2) {
   pid->SetBoxPID(0., 1000., 0., 1000.);
   pid->SetOffsetToF(0.);
   pid->SetProbabilityThreshold(0);
-  pid->SetIonMass(7.5061760); //????
+  pid->SetIonMass(6.5696366); //????
   pid->SetPID(1000020080);
-  run->AddTask(pid);
+  //run->AddTask(pid);
 
   //-------Set visualisation flag to true------------------------------------
-  run->SetStoreTraj(kTRUE);
+  //run->SetStoreTraj(kTRUE);
 
   //-------Set LOG verbosity  ----------------------------------------------- 
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
