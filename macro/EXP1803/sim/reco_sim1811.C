@@ -27,23 +27,22 @@ void reco_sim1811(Int_t nEvents = 10){
   pid->SetBoxPID(0., 1000., 0., 1000.);
   pid->SetOffsetToF(0.);
   pid->SetProbabilityThreshold(0);
-  pid->SetIonMass(7.5061760); //????
+  pid->SetIonMass(6.5691); 
   pid->SetPID(1000020080);
   run->AddTask(pid);
   // ------- QTelescope TrackFinder -------------------------------------------
-  /*
+  
   ERQTelescopeTrackFinder* qtelescopeTrackFinder = new ERQTelescopeTrackFinder(verbose);
 
-  qtelescopeTrackFinder->SetHitStation("Left_telescope", "Left_telescope_SingleSi_SSD20_L_X_0");
-  qtelescopeTrackFinder->SetHitStation("Left_telescope", "Left_telescope_DoubleSi_DSD_L_XY_0");
-  qtelescopeTrackFinder->SetHitStation("Left_telescope", "Left_telescope_SingleSi_SSD_L_X_0");
+  qtelescopeTrackFinder->SetHitStation("Left_telescope", "Left_telescope_DoubleSi_DSD_L_XY_0_X",
+                                                         "Left_telescope_DoubleSi_DSD_L_XY_0_Y");
+  
+  qtelescopeTrackFinder->SetHitStation("Central_telescope", "Central_telescope_DoubleSi_DSD_C_XY_1_X", 
+                                                            "Central_telescope_DoubleSi_DSD_C_XY_1_Y");
 
-  qtelescopeTrackFinder->SetHitStation("Central_telescope", "Central_telescope_DoubleSi_DSD_C_XY_0");
-  qtelescopeTrackFinder->SetHitStation("Central_telescope", "Central_telescope_CsI_0");
-
-  qtelescopeTrackFinder->SetHitStation("Right_telescope","Right_telescope_SingleSi_SSD20_R_X_0");
-  qtelescopeTrackFinder->SetHitStation("Right_telescope","Right_telescope_SingleSi_SSDY_R_Y_0");
-  qtelescopeTrackFinder->SetHitStation("Right_telescope","Right_telescope_SingleSi_SSD_R_Y_0");
+  qtelescopeTrackFinder->SetHitStation("Right_telescope","Right_telescope_SingleSi_SSD20_R_X_2",
+                                                         "Right_telescope_SingleSi_SSDY_R_Y_3");
+  
 
   qtelescopeTrackFinder->SetStripEdepRange(0., 100.);          // [GeV]
   //qtelescopeTrackFinder->SetTargetPoint(0., 0., 0.);
@@ -52,7 +51,7 @@ void reco_sim1811(Int_t nEvents = 10){
   qtelescopeTrackFinder->SetEdepMaxDiffXY(0.5); 
   run->AddTask(qtelescopeTrackFinder);
   // ------- QTelescope PID -------------------------------------------
-  ERQTelescopePID* qtelescopePID = new ERQTelescopePID(verbose);
+  /*ERQTelescopePID* qtelescopePID = new ERQTelescopePID(verbose);
 
   // qtelescopePID->SetUserCut("ERQTelescopeSiDigi_T2_DoubleSi_SD2_XY_1_X.fEdep>0.009");
 
@@ -74,7 +73,7 @@ void reco_sim1811(Int_t nEvents = 10){
   parIO->open(parFile.Data(), "UPDATE");
   rtdb->setFirstInput(parIO);
   // -----   Intialise and run   --------------------------------------------
-  FairLogger::GetLogger()->SetLogScreenLevel("DEBUG");
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   
   run->Init();
   run->Run(0, nEvents);
