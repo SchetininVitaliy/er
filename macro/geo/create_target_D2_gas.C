@@ -195,7 +195,7 @@ void create_target_D2_gas() {
 
   gGeoMan->CloseGeometry();
   gGeoMan->CheckOverlaps();
-  gGeoMan->CheckGeometryFull();
+  //gGeoMan->CheckGeometryFull();
   gGeoMan->PrintOverlaps();
   gGeoMan->Test();
 

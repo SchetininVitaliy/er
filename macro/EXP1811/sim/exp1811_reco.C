@@ -1,10 +1,8 @@
-void reco_sim1811(Int_t nEvents = 10000000){
+void exp1811_reco(Int_t nEvents = 10000000){
   //---------------------Files-----------------------------------------------
-  TString inFile  = "~/ER/macro/EXP1811/sim/sim_digi_1811_D2.root";
-  TString outFile = "~/ER/macro/EXP1811/sim/sim_reco_1811.root";
-  TString parFile = "~/ER/macro/EXP1811/sim/par_1811.root";
-  TString parOutFile = "~/ER/macro/EXP1811/sim/parOut_1811.root";
-  //TString geoFile = "~/ER/macro/EXP1811/sim/setup_exp1811.root";
+  TString inFile  = "sim_digi.root";
+  TString outFile = "sim_reco.root";
+  TString parFile = "par.root";
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();  
