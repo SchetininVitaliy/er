@@ -181,22 +181,12 @@ void ERBeamDetSetup::GetGeoParamsFromParContainer() {
             wirePlaneOrient = "X";
             fWires[mwpcNb][planeNb].insert(std::make_pair(wireNb, new ERBeamDetWire(globalCoords[0], 
                                                                                     globalCoords[1], 
-<<<<<<< HEAD
-                                                                                    globalCoords[2])));
-=======
                                                                                     mwpcStationZ)));
-                                                                                    //globalCoords[2])));
->>>>>>> 0663e9c859c689a6c27072b3c1b4b32c7b8e5a0f
           } else {
             wirePlaneOrient = "Y";
             fWires[mwpcNb][planeNb].insert(std::make_pair(wireNb, new ERBeamDetWire(globalCoords[0], 
                                                                                     globalCoords[1], 
-<<<<<<< HEAD
-                                                                                    globalCoords[2])));
-=======
                                                                                     mwpcStationZ)));
-                                                                                    //globalCoords[2])));
->>>>>>> 0663e9c859c689a6c27072b3c1b4b32c7b8e5a0f
           }
           
           LOG(DEBUG) << "Wire" << wirePlaneOrient << " " << wireNb 
